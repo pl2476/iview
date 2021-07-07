@@ -3,7 +3,7 @@
 </template>
 <script>
     const prefixCls = 'ivu-dropdown-item';
-
+    import { findComponentUpward } from '../../utils/assist';
     export default {
         name: 'DropdownItem',
         props: {
@@ -37,14 +37,10 @@
         },
         methods: {
             handleClick () {
-                const $parent = this.$parent.$parent.$parent;
+                if (this.disabled) return;
+                const $parent = findComponentUpward(this, 'Dropdown');
                 const hasChildren = this.$parent && this.$parent.$options.name === 'Dropdown';
-
-                if (this.disabled) {
-                    this.$nextTick(() => {
-                        $parent.currentVisible = true;
-                    });
-                } else if (hasChildren) {
+                if (hasChildren) {
                     this.$parent.$emit('on-haschild-click');
                 } else {
                     if ($parent && $parent.$options.name === 'Dropdown') {

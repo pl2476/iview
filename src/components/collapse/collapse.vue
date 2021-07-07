@@ -15,6 +15,10 @@
             },
             value: {
                 type: [Array, String]
+            },
+            simple: {
+                type: Boolean,
+                default: false
             }
         },
         data () {
@@ -24,7 +28,12 @@
         },
         computed: {
             classes () {
-                return `${prefixCls}`;
+                return [
+                    `${prefixCls}`,
+                    {
+                        [`${prefixCls}-simple`]: this.simple
+                    }
+                ];
             }
         },
         mounted () {
@@ -33,19 +42,13 @@
         methods: {
             setActive () {
                 const activeKey = this.getActiveKey();
+                this.$nextTick(() => {
+                    this.$children.forEach((child, index) => {
+                        const name = child.name || index.toString();
 
-                this.$children.forEach((child, index) => {
-                    const name = child.name || index.toString();
-                    let isActive = false;
-
-                    if (self.accordion) {
-                        isActive = activeKey === name;
-                    } else {
-                        isActive = activeKey.indexOf(name) > -1;
-                    }
-
-                    child.isActive = isActive;
-                    child.index = index;
+                        child.isActive = activeKey.indexOf(name) > -1;
+                        child.index = index;
+                    });
                 });
             },
             getActiveKey () {

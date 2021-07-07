@@ -3,8 +3,10 @@
         <div :class="[prefixCls + '-tail']"><i></i></div>
         <div :class="[prefixCls + '-head']">
             <div :class="[prefixCls + '-head-inner']">
-                <span v-if="!icon && currentStatus != 'finish' && currentStatus != 'error'">{{ stepNumber }}</span>
-                <span v-else :class="iconClasses"></span>
+                <slot name="status">
+                    <span v-if="!icon && currentStatus != 'finish' && currentStatus != 'error'">{{ stepNumber }}</span>
+                    <span v-else :class="iconClasses"></span>
+                </slot>
             </div>
         </div>
         <div :class="[prefixCls + '-main']">
@@ -16,6 +18,7 @@
     </div>
 </template>
 <script>
+    import Emitter from '../../mixins/emitter';
     import { oneOf } from '../../utils/assist';
 
     const prefixCls = 'ivu-steps';
@@ -23,6 +26,7 @@
 
     export default {
         name: 'Step',
+        mixins: [ Emitter ],
         props: {
             status: {
                 validator (value) {
@@ -49,9 +53,6 @@
                 currentStatus: ''
             };
         },
-        created () {
-            this.currentStatus = this.status;
-        },
         computed: {
             wrapClasses () {
                 return [
@@ -70,9 +71,9 @@
                     icon = this.icon;
                 } else {
                     if (this.currentStatus == 'finish') {
-                        icon = 'ios-checkmark-empty';
+                        icon = 'ios-checkmark';
                     } else if (this.currentStatus == 'error') {
-                        icon = 'ios-close-empty';
+                        icon = 'ios-close';
                     }
                 }
 
@@ -97,6 +98,15 @@
                     this.$parent.setNextError();
                 }
             }
+        },
+        created () {
+            this.currentStatus = this.status;
+        },
+        mounted () {
+            this.dispatch('Steps', 'append');
+        },
+        beforeDestroy () {
+            this.dispatch('Steps', 'remove');
         }
     };
 </script>

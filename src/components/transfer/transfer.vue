@@ -235,9 +235,16 @@
             },
             handleLeftCheckedKeysChange (keys) {
                 this.leftCheckedKeys = keys;
+                this.handleCheckedKeys();
             },
             handleRightCheckedKeysChange (keys) {
                 this.rightCheckedKeys = keys;
+                this.handleCheckedKeys();
+            },
+            handleCheckedKeys () {
+                const sourceSelectedKeys = this.getValidKeys('left');
+                const targetSelectedKeys = this.getValidKeys('right');
+                this.$emit('on-selected-change', sourceSelectedKeys, targetSelectedKeys);
             }
         },
         watch: {
